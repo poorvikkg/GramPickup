@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 font-sans antialiased;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Custom minimal components to maintain premium minimalist aesthetics */
+@layer components {
+  .btn-primary {
+    @apply bg-black text-white hover:bg-gray-800 transition-colors duration-150 py-2 px-4 border border-black text-sm uppercase tracking-wider font-medium;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-black hover:bg-gray-50 transition-colors duration-150 py-2 px-4 border border-gray-300 text-sm uppercase tracking-wider font-medium;
+  }
+
+  .btn-danger {
+    @apply bg-white text-red-600 hover:bg-red-50 transition-colors duration-150 py-2 px-4 border border-red-200 text-sm uppercase tracking-wider font-medium;
+  }
+
+  .input-field {
+    @apply w-full bg-white text-black border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:border-black transition-colors duration-150 placeholder-gray-400;
+  }
+
+  .card-minimal {
+    @apply bg-white border border-gray-200 p-6;
+  }
+
+  .table-minimal {
+    @apply min-w-full divide-y divide-gray-200 text-left border border-gray-200;
+  }
+
+  .table-header {
+    @apply bg-gray-50 text-xs font-semibold uppercase tracking-wider text-gray-500 py-3 px-4;
+  }
+
+  .table-cell {
+    @apply py-3 px-4 text-sm border-t border-gray-200;
+  }
+
+  .badge-minimal {
+    @apply inline-flex items-center px-2 py-0.5 border text-xs font-medium uppercase tracking-wider;
+  }
+}
