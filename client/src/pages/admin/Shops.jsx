@@ -10,7 +10,7 @@ const Shops = () => {
   const [processingId, setProcessingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
-  const isDemoAdmin = user?.email === 'admin@grampickup.com';
+
 
   const fetchShops = async () => {
     try {
@@ -94,11 +94,7 @@ const Shops = () => {
           <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">
             {shops.length} total registrations &bull; {shops.filter(s => s.verificationStatus === 'pending').length} pending review
           </p>
-          {isDemoAdmin && (
-            <div className="mt-3 text-xs font-semibold text-orange-600 bg-orange-50 border border-orange-200 py-1.5 px-3 inline-block">
-              NOTE: Demo Admins cannot approve or reject shops.
-            </div>
-          )}
+
         </div>
 
         {/* Filter Dropdown */}
@@ -161,7 +157,7 @@ const Shops = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-3 text-xs">
                     <div>
                       <span className="text-gray-400 uppercase tracking-wider block text-[10px] font-bold">Owner</span>
                       <span className="text-black font-semibold">{shop.ownerName}</span>
@@ -200,8 +196,8 @@ const Shops = () => {
               </div>
 
               {/* Action Bar */}
-              <div className="border-t border-gray-100 px-4 py-2.5 flex items-center justify-between bg-gray-50/50">
-                <div className="flex items-center gap-3 text-xs text-gray-500">
+              <div className="border-t border-gray-100 px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50/50">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                   <span>Registered: {formatDate(shop.createdAt)}</span>
                   <button
                     onClick={() => setExpandedId(expandedId === shop._id ? null : shop._id)}
@@ -211,11 +207,11 @@ const Shops = () => {
                   </button>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {shop.verificationStatus !== 'approved' && (
                     <button
                       onClick={() => handleUpdateStatus(shop._id, 'approved')}
-                      disabled={processingId === shop._id || isDemoAdmin}
+                      disabled={processingId === shop._id}
                       className="btn-primary py-1 px-3.5 text-xs uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {processingId === shop._id ? '...' : 'Approve'}
@@ -224,7 +220,7 @@ const Shops = () => {
                   {shop.verificationStatus !== 'rejected' && (
                     <button
                       onClick={() => handleUpdateStatus(shop._id, 'rejected')}
-                      disabled={processingId === shop._id || isDemoAdmin}
+                      disabled={processingId === shop._id}
                       className="btn-danger py-1 px-3.5 text-xs uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {processingId === shop._id ? '...' : 'Reject'}

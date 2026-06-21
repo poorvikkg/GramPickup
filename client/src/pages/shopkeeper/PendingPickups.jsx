@@ -211,7 +211,7 @@ const PendingPickups = () => {
                   OTP Secure Handover
                 </h3>
                 <form onSubmit={(e) => handleVerifyDeliver(e, parcel._id)} className="space-y-3">
-                  <div className="flex justify-between items-center gap-1.5">
+                  <div className="flex justify-between items-center gap-1 sm:gap-1.5">
                     {[0, 1, 2, 3, 4, 5].map((index) => {
                       const digits = otpFields[parcel._id] || ['', '', '', '', '', ''];
                       return (
@@ -225,7 +225,7 @@ const PendingPickups = () => {
                           onChange={(e) => handleOtpDigitChange(parcel._id, index, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(parcel._id, index, e)}
                           onPaste={(e) => handleOtpPaste(parcel._id, e)}
-                          className="w-10 h-10 text-center font-mono text-lg font-bold border border-gray-300 bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all duration-150"
+                          className="w-8 h-8 sm:w-10 sm:h-10 text-center font-mono text-base sm:text-lg font-bold border border-gray-300 bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all duration-150"
                         />
                       );
                     })}

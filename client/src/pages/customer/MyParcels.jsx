@@ -167,7 +167,7 @@ const MyParcels = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm font-light text-gray-600">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm font-light text-gray-600">
                 {/* Shop details */}
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-black mb-1">Pickup Store</h3>
@@ -195,7 +195,7 @@ const MyParcels = () => {
                 </div>
 
                 {/* OTP & Fees */}
-                <div className="border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
+                <div className="border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-black mb-1">Fee & Verification</h3>
                   
                   {parcel.status === 'Expected' ? (
@@ -213,7 +213,7 @@ const MyParcels = () => {
                       </div>
 
                       {parcel.status === 'Ready for Pickup' && parcel.otp && (
-                        <div className="border border-black p-2 inline-block bg-gray-50">
+                        <div className="border border-black p-2 block bg-gray-50">
                           <span className="text-[10px] text-gray-500 uppercase tracking-widest block font-semibold">Verification OTP</span>
                           <span className="text-lg font-mono font-bold tracking-widest text-black">{parcel.otp}</span>
                         </div>

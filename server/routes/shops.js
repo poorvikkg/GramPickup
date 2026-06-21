@@ -121,10 +121,6 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
 // @route   PUT /api/shops/:id/status
 // @access  Private (Admin only)
 router.put('/:id/status', protect, authorize('admin'), async (req, res) => {
-  if (req.user && req.user.email === 'admin@grampickup.com') {
-    return res.status(403).json({ message: 'Action not allowed: Demo Admin cannot approve or reject shops.' });
-  }
-
   const { status } = req.body; // 'approved' or 'rejected'
 
   if (!['approved', 'rejected'].includes(status)) {

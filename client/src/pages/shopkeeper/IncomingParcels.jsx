@@ -153,93 +153,184 @@ const IncomingParcels = () => {
           No matching incoming parcels found.
         </div>
       ) : (
-        <div className="overflow-x-auto border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 text-left">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="table-header">Parcel Name</th>
-                <th className="table-header">Tracking Details</th>
-                <th className="table-header">Customer Info</th>
-                <th className="table-header">Expected Date</th>
-                <th className="table-header">Status</th>
-                <th className="table-header">Current Fee</th>
-                <th className="table-header text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {parcels.map((parcel) => (
-                <tr key={parcel._id}>
-                  <td className="table-cell font-medium text-black">{parcel.parcelName}</td>
-                  <td className="table-cell font-mono text-xs">{parcel.trackingNumber}</td>
-                  <td className="table-cell">
-                    <div className="text-xs">
-                      <p className="font-semibold text-black">{parcel.customerId?.name}</p>
-                      <p className="text-gray-500">{parcel.customerId?.phone}</p>
-                    </div>
-                  </td>
-                  <td className="table-cell text-xs">{formatDate(parcel.expectedArrivalDate)}</td>
-                  <td className="table-cell">
-                    <span className={`badge-minimal ${
-                      parcel.status === 'Expected' ? 'border-gray-300 text-gray-600' :
-                      parcel.status === 'Arrived' ? 'border-blue-300 text-blue-800' :
-                      parcel.status === 'Ready for Pickup' ? 'border-yellow-500 text-yellow-800 font-bold' :
-                      'border-black text-black bg-gray-50'
-                    }`}>
-                      {parcel.status}
-                    </span>
-                  </td>
-                  <td className="table-cell text-sm font-semibold">
-                    {parcel.status === 'Expected' ? '—' : `₹${parcel.currentFee || parcel.fee}`}
-                  </td>
-                  <td className="table-cell text-right whitespace-nowrap">
-                    {parcel.status === 'Expected' && (
-                      <button
-                        onClick={() => handleMarkReceived(parcel._id)}
-                        disabled={actionLoadingId === parcel._id}
-                        className="btn-primary py-1 px-3 text-xs"
-                      >
-                        Mark Received
-                      </button>
-                    )}
-                    {parcel.status === 'Arrived' && (
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleMarkReady(parcel._id)}
-                          disabled={actionLoadingId === parcel._id}
-                          className="btn-secondary border-black text-black py-1 px-3 text-xs"
-                        >
-                          Mark Ready
-                        </button>
-                        <button
-                          onClick={() => handleDeliverDirect(parcel._id)}
-                          disabled={actionLoadingId === parcel._id}
-                          className="btn-primary py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white"
-                        >
-                          Deliver Direct
-                        </button>
-                      </div>
-                    )}
-                    {parcel.status === 'Ready for Pickup' && (
-                      <div className="flex justify-end gap-2 items-center">
-                        <span className="text-xs text-yellow-800 font-semibold uppercase tracking-wider">Awaiting OTP</span>
-                        <button
-                          onClick={() => handleDeliverDirect(parcel._id)}
-                          disabled={actionLoadingId === parcel._id}
-                          className="btn-primary py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white"
-                        >
-                          Deliver Direct
-                        </button>
-                      </div>
-                    )}
-                    {parcel.status === 'Delivered' && (
-                      <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold font-mono">Delivered</span>
-                    )}
-                  </td>
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 text-left">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="table-header">Parcel Name</th>
+                  <th className="table-header">Tracking Details</th>
+                  <th className="table-header">Customer Info</th>
+                  <th className="table-header">Expected Date</th>
+                  <th className="table-header">Status</th>
+                  <th className="table-header">Current Fee</th>
+                  <th className="table-header text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {parcels.map((parcel) => (
+                  <tr key={parcel._id}>
+                    <td className="table-cell font-medium text-black">{parcel.parcelName}</td>
+                    <td className="table-cell font-mono text-xs">{parcel.trackingNumber}</td>
+                    <td className="table-cell">
+                      <div className="text-xs">
+                        <p className="font-semibold text-black">{parcel.customerId?.name}</p>
+                        <p className="text-gray-500">{parcel.customerId?.phone}</p>
+                      </div>
+                    </td>
+                    <td className="table-cell text-xs">{formatDate(parcel.expectedArrivalDate)}</td>
+                    <td className="table-cell">
+                      <span className={`badge-minimal ${
+                        parcel.status === 'Expected' ? 'border-gray-300 text-gray-600' :
+                        parcel.status === 'Arrived' ? 'border-blue-300 text-blue-800' :
+                        parcel.status === 'Ready for Pickup' ? 'border-yellow-500 text-yellow-800 font-bold' :
+                        'border-black text-black bg-gray-50'
+                      }`}>
+                        {parcel.status}
+                      </span>
+                    </td>
+                    <td className="table-cell text-sm font-semibold">
+                      {parcel.status === 'Expected' ? '—' : `₹${parcel.currentFee || parcel.fee}`}
+                    </td>
+                    <td className="table-cell text-right whitespace-nowrap">
+                      {parcel.status === 'Expected' && (
+                        <button
+                          onClick={() => handleMarkReceived(parcel._id)}
+                          disabled={actionLoadingId === parcel._id}
+                          className="btn-primary py-1 px-3 text-xs"
+                        >
+                          Mark Received
+                        </button>
+                      )}
+                      {parcel.status === 'Arrived' && (
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleMarkReady(parcel._id)}
+                            disabled={actionLoadingId === parcel._id}
+                            className="btn-secondary border-black text-black py-1 px-3 text-xs"
+                          >
+                            Mark Ready
+                          </button>
+                          <button
+                            onClick={() => handleDeliverDirect(parcel._id)}
+                            disabled={actionLoadingId === parcel._id}
+                            className="btn-primary py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white"
+                          >
+                            Deliver Direct
+                          </button>
+                        </div>
+                      )}
+                      {parcel.status === 'Ready for Pickup' && (
+                        <div className="flex justify-end gap-2 items-center">
+                          <span className="text-xs text-yellow-800 font-semibold uppercase tracking-wider">Awaiting OTP</span>
+                          <button
+                            onClick={() => handleDeliverDirect(parcel._id)}
+                            disabled={actionLoadingId === parcel._id}
+                            className="btn-primary py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white"
+                          >
+                            Deliver Direct
+                          </button>
+                        </div>
+                      )}
+                      {parcel.status === 'Delivered' && (
+                        <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold font-mono">Delivered</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="block md:hidden space-y-4">
+            {parcels.map((parcel) => (
+              <div key={parcel._id} className="border border-gray-200 p-4 bg-white space-y-3">
+                <div className="flex justify-between items-start gap-2">
+                  <div>
+                    <h3 className="font-bold text-black text-sm uppercase">{parcel.parcelName}</h3>
+                    <p className="text-xs font-mono text-gray-500 mt-0.5">{parcel.trackingNumber}</p>
+                  </div>
+                  <span className={`badge-minimal flex-shrink-0 ${
+                    parcel.status === 'Expected' ? 'border-gray-300 text-gray-600' :
+                    parcel.status === 'Arrived' ? 'border-blue-300 text-blue-800' :
+                    parcel.status === 'Ready for Pickup' ? 'border-yellow-500 text-yellow-800 font-bold' :
+                    'border-black text-black bg-gray-50'
+                  }`}>
+                    {parcel.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 py-3 border-t border-b border-gray-100 text-xs text-gray-600">
+                  <div>
+                    <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Customer</span>
+                    <span className="text-black font-semibold block">{parcel.customerId?.name}</span>
+                    <span className="text-gray-500 block mt-0.5">{parcel.customerId?.phone}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Expected Date</span>
+                    <span className="text-black font-semibold block">{formatDate(parcel.expectedArrivalDate)}</span>
+                  </div>
+                  <div className="col-span-2 pt-1.5 flex justify-between items-center">
+                    <div>
+                      <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Current Fee</span>
+                      <span className="text-black font-bold text-sm block">
+                        {parcel.status === 'Expected' ? '—' : `₹${parcel.currentFee || parcel.fee}`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions wrapper inside mobile card */}
+                <div className="pt-1 flex flex-wrap gap-2 justify-end">
+                  {parcel.status === 'Expected' && (
+                    <button
+                      onClick={() => handleMarkReceived(parcel._id)}
+                      disabled={actionLoadingId === parcel._id}
+                      className="btn-primary w-full py-2 text-center text-xs uppercase tracking-wider"
+                    >
+                      {actionLoadingId === parcel._id ? 'Processing...' : 'Mark Received'}
+                    </button>
+                  )}
+                  {parcel.status === 'Arrived' && (
+                    <div className="flex w-full gap-2">
+                      <button
+                        onClick={() => handleMarkReady(parcel._id)}
+                        disabled={actionLoadingId === parcel._id}
+                        className="btn-secondary border-black text-black flex-1 py-2 text-center text-xs uppercase tracking-wider"
+                      >
+                        Mark Ready
+                      </button>
+                      <button
+                        onClick={() => handleDeliverDirect(parcel._id)}
+                        disabled={actionLoadingId === parcel._id}
+                        className="btn-primary flex-1 py-2 text-center text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white uppercase tracking-wider"
+                      >
+                        Deliver Direct
+                      </button>
+                    </div>
+                  )}
+                  {parcel.status === 'Ready for Pickup' && (
+                    <div className="w-full flex items-center justify-between gap-3">
+                      <span className="text-xs text-yellow-800 font-semibold uppercase tracking-wider">Awaiting OTP</span>
+                      <button
+                        onClick={() => handleDeliverDirect(parcel._id)}
+                        disabled={actionLoadingId === parcel._id}
+                        className="btn-primary py-2 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white uppercase tracking-wider"
+                      >
+                        Deliver Direct
+                      </button>
+                    </div>
+                  )}
+                  {parcel.status === 'Delivered' && (
+                    <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold font-mono w-full text-right py-1">Delivered</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

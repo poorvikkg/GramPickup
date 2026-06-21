@@ -65,50 +65,100 @@ const Revenue = () => {
             No revenue records found yet. Hand over parcels to begin earning.
           </div>
         ) : (
-          <div className="overflow-x-auto border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200 text-left">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="table-header">Parcel Name</th>
-                  <th className="table-header">Tracking #</th>
-                  <th className="table-header">Customer</th>
-                  <th className="table-header">Arrival Date</th>
-                  <th className="table-header">Pickup Date</th>
-                  <th className="table-header font-semibold text-right">Fee Earned</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {data.parcels.map((parcel) => {
-                  // Calculate storage days
-                  const arrival = new Date(parcel.arrivalDate);
-                  const pickup = new Date(parcel.pickupDate);
-                  const diffTime = pickup.getTime() - arrival.getTime();
-                  const days = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200 text-left">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="table-header">Parcel Name</th>
+                    <th className="table-header">Tracking #</th>
+                    <th className="table-header">Customer</th>
+                    <th className="table-header">Arrival Date</th>
+                    <th className="table-header">Pickup Date</th>
+                    <th className="table-header font-semibold text-right">Fee Earned</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {data.parcels.map((parcel) => {
+                    // Calculate storage days
+                    const arrival = new Date(parcel.arrivalDate);
+                    const pickup = new Date(parcel.pickupDate);
+                    const diffTime = pickup.getTime() - arrival.getTime();
+                    const days = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
 
-                  return (
-                    <tr key={parcel._id}>
-                      <td className="table-cell font-medium text-black">{parcel.parcelName}</td>
-                      <td className="table-cell font-mono text-xs text-gray-500">{parcel.trackingNumber}</td>
-                      <td className="table-cell">
-                        <div className="text-xs">
-                          <p className="font-semibold text-black">{parcel.customerId?.name}</p>
-                          <p className="text-gray-500">{parcel.customerId?.phone}</p>
-                        </div>
-                      </td>
-                      <td className="table-cell text-xs text-gray-600">{formatDate(parcel.arrivalDate)}</td>
-                      <td className="table-cell text-xs text-gray-600 font-medium">{formatDate(parcel.pickupDate)}</td>
-                      <td className="table-cell text-right font-bold text-black">
+                    return (
+                      <tr key={parcel._id}>
+                        <td className="table-cell font-medium text-black">{parcel.parcelName}</td>
+                        <td className="table-cell font-mono text-xs text-gray-500">{parcel.trackingNumber}</td>
+                        <td className="table-cell">
+                          <div className="text-xs">
+                            <p className="font-semibold text-black">{parcel.customerId?.name}</p>
+                            <p className="text-gray-500">{parcel.customerId?.phone}</p>
+                          </div>
+                        </td>
+                        <td className="table-cell text-xs text-gray-600">{formatDate(parcel.arrivalDate)}</td>
+                        <td className="table-cell text-xs text-gray-600 font-medium">{formatDate(parcel.pickupDate)}</td>
+                        <td className="table-cell text-right font-bold text-black">
+                          ₹{parcel.fee}
+                          <span className="text-[10px] text-gray-400 block font-normal tracking-wide">
+                            ({days} days storage)
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="block md:hidden space-y-4">
+              {data.parcels.map((parcel) => {
+                // Calculate storage days
+                const arrival = new Date(parcel.arrivalDate);
+                const pickup = new Date(parcel.pickupDate);
+                const diffTime = pickup.getTime() - arrival.getTime();
+                const days = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+
+                return (
+                  <div key={parcel._id} className="border border-gray-200 p-4 bg-white space-y-3">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <h3 className="font-bold text-black text-sm uppercase">{parcel.parcelName}</h3>
+                        <p className="text-xs font-mono text-gray-500 mt-0.5">{parcel.trackingNumber}</p>
+                      </div>
+                      <span className="text-sm font-bold text-black">
                         ₹{parcel.fee}
-                        <span className="text-[10px] text-gray-400 block font-normal tracking-wide">
-                          ({days} days storage)
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-100 text-xs text-gray-600">
+                      <div>
+                        <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Customer</span>
+                        <span className="text-black font-semibold block leading-tight">{parcel.customerId?.name}</span>
+                        <span className="text-gray-500 block mt-0.5">{parcel.customerId?.phone}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Storage Days</span>
+                        <span className="text-black font-semibold block">{days} day{days === 1 ? '' : 's'}</span>
+                      </div>
+                      <div className="col-span-2 flex justify-between pt-1 text-[11px]">
+                        <div>
+                          <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Arrival Date</span>
+                          <span className="text-gray-700 block">{formatDate(parcel.arrivalDate)}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-gray-400 uppercase block text-[9px] font-bold tracking-wider mb-0.5">Pickup Date</span>
+                          <span className="text-gray-700 block font-semibold">{formatDate(parcel.pickupDate)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
     </div>

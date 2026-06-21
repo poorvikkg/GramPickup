@@ -187,7 +187,7 @@ const AddParcel = () => {
                   <p className="text-[10px] text-gray-300 normal-case leading-relaxed font-light">
                     Copy and paste these details into Amazon, Flipkart, or any online store during checkout:
                   </p>
-                  <div className="bg-gray-900 p-3 space-y-2 font-mono text-[10px] text-gray-200 border border-gray-800 normal-case">
+                <div className="bg-gray-900 p-3 space-y-2 font-mono text-[10px] text-gray-200 border border-gray-800 normal-case break-words">
                     <p><strong>Name:</strong> [Your Name] (c/o {selectedShop.shopName})</p>
                     <p><strong>Address:</strong> {selectedShop.address}, {selectedShop.city}</p>
                     <p className="text-yellow-400 font-semibold"><strong>Phone Number:</strong> {selectedShop.phone}</p>

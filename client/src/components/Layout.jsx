@@ -7,6 +7,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const fetchUnreadCount = async () => {
     if (!user) return;
@@ -29,6 +30,10 @@ const Layout = ({ children }) => {
     return () => clearInterval(interval);
   }, [user, location.pathname]);
 
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -36,6 +41,10 @@ const Layout = ({ children }) => {
 
   const isActive = (path) => {
     return location.pathname === path ? 'text-black border-b-2 border-black font-semibold' : 'text-gray-500 hover:text-black';
+  };
+
+  const isMobileActive = (path) => {
+    return location.pathname === path ? 'text-black font-bold border-l-2 border-black pl-2' : 'text-gray-500 hover:text-black pl-2';
   };
 
   return (
@@ -100,7 +109,7 @@ const Layout = ({ children }) => {
             </nav>
 
             {/* Auth panel */}
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               {user ? (
                 <div className="flex items-center space-x-3 text-sm">
                   <div className="text-right">
@@ -131,50 +140,137 @@ const Layout = ({ children }) => {
                 </div>
               )}
             </div>
+
+            {/* Hamburger icon for mobile screen */}
+            <div className="flex items-center md:hidden">
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="text-black focus:outline-none p-2 relative"
+                aria-label="Open mobile menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-black border border-white"></span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Mobile menu (Horizontal, simple text-based scrollable list of links for simplicity & aesthetics) */}
-        <div className="md:hidden border-t border-gray-100 flex overflow-x-auto py-2.5 px-4 space-x-4 text-xs font-semibold uppercase tracking-wider whitespace-nowrap scrollbar-none">
-          {!user && (
-            <>
-              <Link to="/" className={location.pathname === '/' ? 'text-black font-bold' : 'text-gray-500'}>Home</Link>
-              <Link to="/about" className={location.pathname === '/about' ? 'text-black font-bold' : 'text-gray-500'}>About</Link>
-              <Link to="/contact" className={location.pathname === '/contact' ? 'text-black font-bold' : 'text-gray-500'}>Contact</Link>
-            </>
-          )}
-          {user && user.role === 'customer' && (
-            <>
-              <Link to="/customer/dashboard" className={location.pathname === '/customer/dashboard' ? 'text-black font-bold' : 'text-gray-500'}>Dashboard</Link>
-              <Link to="/customer/parcels" className={location.pathname === '/customer/parcels' ? 'text-black font-bold' : 'text-gray-500'}>My Parcels</Link>
-              <Link to="/customer/shops" className={location.pathname === '/customer/shops' ? 'text-black font-bold' : 'text-gray-500'}>Verified Shops</Link>
-              <Link to="/customer/add-parcel" className={location.pathname === '/customer/add-parcel' ? 'text-black font-bold' : 'text-gray-500'}>Add Parcel</Link>
-              <Link to="/customer/notifications" className={location.pathname === '/customer/notifications' ? 'text-black font-bold' : 'text-gray-500'}>
-                Notifications {unreadCount > 0 && `(${unreadCount})`}
-              </Link>
-              <Link to="/customer/profile" className={location.pathname === '/customer/profile' ? 'text-black font-bold' : 'text-gray-500'}>Profile</Link>
-            </>
-          )}
-          {user && user.role === 'shopkeeper' && (
-            <>
-              <Link to="/shopkeeper/dashboard" className={location.pathname === '/shopkeeper/dashboard' ? 'text-black font-bold' : 'text-gray-500'}>Dashboard</Link>
-              <Link to="/shopkeeper/incoming" className={location.pathname === '/shopkeeper/incoming' ? 'text-black font-bold' : 'text-gray-500'}>Incoming</Link>
-              <Link to="/shopkeeper/pending" className={location.pathname === '/shopkeeper/pending' ? 'text-black font-bold' : 'text-gray-500'}>Pending Pickups</Link>
-              <Link to="/shopkeeper/revenue" className={location.pathname === '/shopkeeper/revenue' ? 'text-black font-bold' : 'text-gray-500'}>Revenue</Link>
-              <Link to="/shopkeeper/profile" className={location.pathname === '/shopkeeper/profile' ? 'text-black font-bold' : 'text-gray-500'}>Shop Details</Link>
-            </>
-          )}
-          {user && user.role === 'admin' && (
-            <>
-              <Link to="/admin/dashboard" className={location.pathname === '/admin/dashboard' ? 'text-black font-bold' : 'text-gray-500'}>Dashboard</Link>
-              <Link to="/admin/shops" className={location.pathname === '/admin/shops' ? 'text-black font-bold' : 'text-gray-500'}>Shops</Link>
-              <Link to="/admin/users" className={location.pathname === '/admin/users' ? 'text-black font-bold' : 'text-gray-500'}>Users</Link>
-              <Link to="/admin/parcels" className={location.pathname === '/admin/parcels' ? 'text-black font-bold' : 'text-gray-500'}>Parcels</Link>
-              <Link to="/admin/analytics" className={location.pathname === '/admin/analytics' ? 'text-black font-bold' : 'text-gray-500'}>Analytics</Link>
-            </>
-          )}
-        </div>
       </header>
+
+      {/* Mobile Menu Drawer Overlay & Content */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex justify-end">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+
+          {/* Drawer container */}
+          <div className="relative w-full max-w-xs bg-white h-full shadow-2xl p-6 flex flex-col justify-between border-l border-gray-200 z-10 animate-slide-in">
+            <div>
+              {/* Drawer Header */}
+              <div className="flex justify-between items-center pb-6 border-b border-gray-100">
+                <span className="text-lg font-bold uppercase tracking-wider text-black">Menu</span>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-8 h-8 rounded-full border border-gray-200 bg-white hover:border-black flex items-center justify-center font-bold text-black shadow-xs transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* User Profile (if logged in) */}
+              {user && (
+                <div className="py-4 border-b border-gray-100 mb-4">
+                  <p className="text-sm font-bold text-black uppercase">{user.name}</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono font-bold mt-0.5">{user.role}</p>
+                </div>
+              )}
+
+              {/* Navigation Links list */}
+              <nav className="flex flex-col space-y-4 text-sm font-semibold uppercase tracking-wider py-4">
+                {/* Public routes */}
+                {!user && (
+                  <>
+                    <Link to="/" className={isMobileActive('/')}>Home</Link>
+                    <Link to="/about" className={isMobileActive('/about')}>About</Link>
+                    <Link to="/contact" className={isMobileActive('/contact')}>Contact</Link>
+                  </>
+                )}
+
+                {/* Customer routes */}
+                {user && user.role === 'customer' && (
+                  <>
+                    <Link to="/customer/dashboard" className={isMobileActive('/customer/dashboard')}>Dashboard</Link>
+                    <Link to="/customer/parcels" className={isMobileActive('/customer/parcels')}>My Parcels</Link>
+                    <Link to="/customer/shops" className={isMobileActive('/customer/shops')}>Verified Shops</Link>
+                    <Link to="/customer/add-parcel" className={isMobileActive('/customer/add-parcel')}>Add Parcel</Link>
+                    <Link to="/customer/notifications" className={isMobileActive('/customer/notifications')}>
+                      Notifications {unreadCount > 0 && `(${unreadCount})`}
+                    </Link>
+                    <Link to="/customer/profile" className={isMobileActive('/customer/profile')}>Profile</Link>
+                  </>
+                )}
+
+                {/* Shopkeeper routes */}
+                {user && user.role === 'shopkeeper' && (
+                  <>
+                    <Link to="/shopkeeper/dashboard" className={isMobileActive('/shopkeeper/dashboard')}>Dashboard</Link>
+                    <Link to="/shopkeeper/incoming" className={isMobileActive('/shopkeeper/incoming')}>Incoming</Link>
+                    <Link to="/shopkeeper/pending" className={isMobileActive('/shopkeeper/pending')}>Pending Pickups</Link>
+                    <Link to="/shopkeeper/revenue" className={isMobileActive('/shopkeeper/revenue')}>Revenue</Link>
+                    <Link to="/shopkeeper/profile" className={isMobileActive('/shopkeeper/profile')}>Shop Details</Link>
+                  </>
+                )}
+
+                {/* Admin routes */}
+                {user && user.role === 'admin' && (
+                  <>
+                    <Link to="/admin/dashboard" className={isMobileActive('/admin/dashboard')}>Dashboard</Link>
+                    <Link to="/admin/shops" className={isMobileActive('/admin/shops')}>Shops</Link>
+                    <Link to="/admin/users" className={isMobileActive('/admin/users')}>Users</Link>
+                    <Link to="/admin/parcels" className={isMobileActive('/admin/parcels')}>Parcels</Link>
+                    <Link to="/admin/analytics" className={isMobileActive('/admin/analytics')}>Analytics</Link>
+                  </>
+                )}
+              </nav>
+            </div>
+
+            {/* Drawer Footer Auth Button */}
+            <div className="pt-6 border-t border-gray-100">
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="w-full btn-primary py-2.5 text-center text-xs font-semibold"
+                >
+                  Logout
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center border border-gray-300 text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:border-black transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center bg-black text-white py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-gray-800 transition-colors"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">

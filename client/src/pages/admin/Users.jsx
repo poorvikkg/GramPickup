@@ -116,46 +116,83 @@ const Users = () => {
           No registered users found.
         </div>
       ) : (
-        <div className="overflow-x-auto border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 text-left">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="table-header">Name</th>
-                <th className="table-header">Email Address</th>
-                <th className="table-header">Phone</th>
-                <th className="table-header">Role</th>
-                <th className="table-header">Registration Date</th>
-                <th className="table-header text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredUsers.map((u) => (
-                <tr key={u._id}>
-                  <td className="table-cell font-semibold text-black">{u.name}</td>
-                  <td className="table-cell font-mono text-xs">{u.email}</td>
-                  <td className="table-cell text-xs">{u.phone}</td>
-                  <td className="table-cell">
-                    <span className={`badge-minimal ${
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 text-left">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="table-header">Name</th>
+                  <th className="table-header">Email Address</th>
+                  <th className="table-header">Phone</th>
+                  <th className="table-header">Role</th>
+                  <th className="table-header">Registration Date</th>
+                  <th className="table-header text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {filteredUsers.map((u) => (
+                  <tr key={u._id}>
+                    <td className="table-cell font-semibold text-black">{u.name}</td>
+                    <td className="table-cell font-mono text-xs">{u.email}</td>
+                    <td className="table-cell text-xs">{u.phone}</td>
+                    <td className="table-cell">
+                      <span className={`badge-minimal ${
+                        u.role === 'customer' ? 'border-gray-300 text-gray-600' : 'border-black text-black font-semibold'
+                      }`}>
+                        {u.role}
+                      </span>
+                    </td>
+                    <td className="table-cell text-xs">{formatDate(u.createdAt)}</td>
+                    <td className="table-cell text-right">
+                      <button
+                        onClick={() => handleDeleteUser(u._id, u.name)}
+                        disabled={deletingId === u._id}
+                        className="btn-danger py-1 px-3 text-xs uppercase"
+                      >
+                        {deletingId === u._id ? '...' : 'Delete'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="block md:hidden space-y-4">
+            {filteredUsers.map((u) => (
+              <div key={u._id} className="border border-gray-200 p-4 bg-white space-y-3">
+                <div className="flex justify-between items-start gap-2">
+                  <div>
+                    <h3 className="font-bold text-black text-sm uppercase">{u.name}</h3>
+                    <span className={`badge-minimal mt-1 ${
                       u.role === 'customer' ? 'border-gray-300 text-gray-600' : 'border-black text-black font-semibold'
                     }`}>
                       {u.role}
                     </span>
-                  </td>
-                  <td className="table-cell text-xs">{formatDate(u.createdAt)}</td>
-                  <td className="table-cell text-right">
-                    <button
-                      onClick={() => handleDeleteUser(u._id, u.name)}
-                      disabled={deletingId === u._id}
-                      className="btn-danger py-1 px-3 text-xs uppercase"
-                    >
-                      {deletingId === u._id ? '...' : 'Delete'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                  <span className="text-[10px] text-gray-400 font-mono">{formatDate(u.createdAt)}</span>
+                </div>
+
+                <div className="pt-2.5 border-t border-gray-100 text-xs text-gray-600 space-y-1">
+                  <p><strong className="text-gray-400 uppercase text-[9px] font-bold tracking-wider mr-2">Email:</strong><span className="font-mono">{u.email}</span></p>
+                  <p><strong className="text-gray-400 uppercase text-[9px] font-bold tracking-wider mr-2">Phone:</strong>{u.phone}</p>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={() => handleDeleteUser(u._id, u.name)}
+                    disabled={deletingId === u._id}
+                    className="btn-danger w-full py-2 text-center text-xs uppercase tracking-wider"
+                  >
+                    {deletingId === u._id ? 'Deletes...' : 'Delete Account'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
