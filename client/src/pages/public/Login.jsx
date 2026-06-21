@@ -50,11 +50,13 @@ const Login = () => {
     }
   };
 
+  const [isAdminMode, setIsAdminMode] = useState(false);
+
   return (
     <div className="max-w-md mx-auto py-12">
       <div className="border border-gray-200 p-8 bg-white">
         <h1 className="text-2xl font-bold uppercase tracking-wider text-black mb-6 text-center">
-          Sign In
+          {isAdminMode ? 'Admin Portal' : 'Sign In'}
         </h1>
 
         {error && (
@@ -103,49 +105,63 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center" aria-hidden="true">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-            <span className="bg-white px-2 text-gray-500">Demo Access</span>
-          </div>
-        </div>
+        {!isAdminMode && (
+          <>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
+                <span className="bg-white px-2 text-gray-500">Demo Access</span>
+              </div>
+            </div>
 
-        <div className="space-y-3">
-          <button
-            type="button"
-            onClick={() => handleQuickAccess('customer1@grampickup.com', 'customer123', 'customer', '/customer/dashboard')}
-            disabled={loading}
-            className="w-full border border-black text-black py-2 text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200"
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => handleQuickAccess('customer1@grampickup.com', 'customer123', 'customer', '/customer/dashboard')}
+                disabled={loading}
+                className="w-full border border-black text-black py-2 text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200"
+              >
+                Login as Customer
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => handleQuickAccess('shopkeeper1@grampickup.com', 'shopkeeper123', 'shopkeeper', '/shopkeeper/dashboard')}
+                disabled={loading}
+                className="w-full border border-black text-black py-2 text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200"
+              >
+                Login as Shopkeeper
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickAccess('admin@grampickup.com', 'admin123', 'admin', '/admin/dashboard')}
+                disabled={loading}
+                className="w-full border border-gray-300 text-gray-600 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-200"
+              >
+                Login as Admin
+              </button>
+            </div>
+
+            <div className="mt-6 text-center text-xs text-gray-500 uppercase tracking-wider">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-black font-semibold underline hover:no-underline">
+                Register Here
+              </Link>
+            </div>
+          </>
+        )}
+
+        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+          <button 
+            type="button" 
+            onClick={() => setIsAdminMode(!isAdminMode)}
+            className="text-[10px] text-gray-400 hover:text-black font-bold uppercase tracking-widest transition-colors duration-200"
           >
-            Login as Customer
+            {isAdminMode ? '← Back to Standard Login' : 'System Administrator Login'}
           </button>
-
-          <button
-            type="button"
-            onClick={() => handleQuickAccess('shopkeeper1@grampickup.com', 'shopkeeper123', 'shopkeeper', '/shopkeeper/dashboard')}
-            disabled={loading}
-            className="w-full border border-black text-black py-2 text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200"
-          >
-            Login as Shopkeeper
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleQuickAccess('admin@grampickup.com', 'admin123', 'admin', '/admin/dashboard')}
-            disabled={loading}
-            className="w-full border border-gray-300 text-gray-600 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-200"
-          >
-            Login as Admin
-          </button>
-        </div>
-
-        <div className="mt-6 text-center text-xs text-gray-500 uppercase tracking-wider">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-black font-semibold underline">
-            Register Here
-          </Link>
         </div>
       </div>
     </div>
