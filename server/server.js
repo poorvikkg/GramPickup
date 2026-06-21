@@ -4,6 +4,12 @@ const cors = require('cors');
 const connectDB = async () => {
   const conn = require('./config/db');
   await conn();
+  try {
+    const { startFeeScheduler } = require('./utils/feeScheduler');
+    startFeeScheduler();
+  } catch (err) {
+    console.error('Failed to start fee scheduler:', err);
+  }
 };
 
 const authRoutes = require('./routes/auth');
@@ -47,8 +53,17 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+} else {
+  // For Vercel Serverless execution
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;

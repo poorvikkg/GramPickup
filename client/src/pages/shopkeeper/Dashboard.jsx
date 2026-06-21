@@ -71,6 +71,13 @@ const Dashboard = () => {
     }
   };
 
+  const renderStars = (rating) => {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+  };
+
   useEffect(() => {
     fetchShopDetails();
   }, []);
@@ -296,8 +303,16 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold uppercase tracking-wider text-black">
             Shopkeeper Dashboard
           </h1>
-          <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">
-            Verified Store: <strong className="text-black">{shop.shopName}</strong> ({shop.city})
+          <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide flex items-center flex-wrap gap-2">
+            <span>Verified Store: <strong className="text-black">{shop.shopName}</strong> ({shop.city})</span>
+            {shop.averageRating ? (
+              <span className="inline-flex items-center gap-1 font-semibold text-black border-l border-gray-300 pl-2">
+                <span className="text-yellow-500 text-sm">{renderStars(shop.averageRating)}</span>
+                <span>{shop.averageRating}/5 ({shop.ratings?.length || 0} reviews)</span>
+              </span>
+            ) : (
+              <span className="inline-block text-gray-400 italic font-light border-l border-gray-300 pl-2">No ratings yet</span>
+            )}
           </p>
         </div>
         <div className="text-xs text-gray-500 border border-gray-200 py-1.5 px-3 uppercase tracking-wider font-semibold">
@@ -347,6 +362,40 @@ const Dashboard = () => {
           <li>When processing is done, click <strong>Mark Ready</strong> to generate a verification OTP for the customer.</li>
           <li>Upon customer pickup, verify their OTP code in <strong>Pending Pickups</strong> to unlock the parcel, collect the storage fee, and release it.</li>
         </ol>
+      </div>
+
+      {/* Ratings & Customer Feedback Section */}
+      <div className="border border-gray-200 p-6 bg-white max-w-3xl space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-black mb-2">Customer Reviews & Ratings</h3>
+        {shop.ratings && shop.ratings.length > 0 ? (
+          <div className="divide-y divide-gray-100">
+            {shop.ratings.map((r, idx) => (
+              <div key={idx} className="py-4 first:pt-0 last:pb-0 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-xs text-black">{r.customerName}</span>
+                    <span className="text-yellow-500 text-sm">{renderStars(r.rating)}</span>
+                    <span className="text-xs text-gray-500 font-bold">{r.rating}/5</span>
+                  </div>
+                  <span className="text-[10px] text-gray-400">
+                    {new Date(r.createdAt).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </span>
+                </div>
+                {r.feedback && (
+                  <p className="text-xs text-gray-600 font-light leading-relaxed">
+                    "{r.feedback}"
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-400 italic">No customer reviews yet.</p>
+        )}
       </div>
     </div>
   );

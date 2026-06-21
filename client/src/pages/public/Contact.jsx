@@ -45,7 +45,7 @@ const Contact = () => {
         <div className="space-y-4 text-sm font-light text-gray-600">
           <div>
             <h3 className="font-semibold text-black uppercase text-xs tracking-wider">Office Address</h3>
-            <p>Mangalore, Karnataka</p>
+            <p>Vamanjoor,Mangalore, Karnataka</p>
           </div>
           <div>
             <h3 className="font-semibold text-black uppercase text-xs tracking-wider">Email Address</h3>

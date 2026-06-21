@@ -61,6 +61,24 @@ const IncomingParcels = () => {
     }
   };
 
+  const handleDeliverDirect = async (id) => {
+    if (!window.confirm("Are you sure you want to mark this parcel as collected? This will lock in the current storage fee and stop calculations.")) {
+      return;
+    }
+    setActionLoadingId(id);
+    try {
+      await apiFetch(`/parcels/${id}/deliver-direct`, {
+        method: 'PUT',
+      });
+      alert(`Parcel marked as delivered/collected successfully! Storage fee locked.`);
+      fetchParcels();
+    } catch (err) {
+      alert(err.message || 'Error marking parcel as delivered');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('en-IN', {
@@ -184,19 +202,37 @@ const IncomingParcels = () => {
                       </button>
                     )}
                     {parcel.status === 'Arrived' && (
-                      <button
-                        onClick={() => handleMarkReady(parcel._id)}
-                        disabled={actionLoadingId === parcel._id}
-                        className="btn-secondary border-black text-black py-1 px-3 text-xs"
-                      >
-                        Mark Ready
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleMarkReady(parcel._id)}
+                          disabled={actionLoadingId === parcel._id}
+                          className="btn-secondary border-black text-black py-1 px-3 text-xs"
+                        >
+                          Mark Ready
+                        </button>
+                        <button
+                          onClick={() => handleDeliverDirect(parcel._id)}
+                          disabled={actionLoadingId === parcel._id}
+                          className="btn-primary py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white"
+                        >
+                          Deliver Direct
+                        </button>
+                      </div>
                     )}
                     {parcel.status === 'Ready for Pickup' && (
-                      <span className="text-xs text-yellow-800 font-semibold uppercase tracking-wider">Awaiting Verification</span>
+                      <div className="flex justify-end gap-2 items-center">
+                        <span className="text-xs text-yellow-800 font-semibold uppercase tracking-wider">Awaiting OTP</span>
+                        <button
+                          onClick={() => handleDeliverDirect(parcel._id)}
+                          disabled={actionLoadingId === parcel._id}
+                          className="btn-primary py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white"
+                        >
+                          Deliver Direct
+                        </button>
+                      </div>
                     )}
                     {parcel.status === 'Delivered' && (
-                      <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold">Delivered</span>
+                      <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold font-mono">Delivered</span>
                     )}
                   </td>
                 </tr>

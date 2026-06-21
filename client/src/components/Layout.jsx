@@ -67,6 +67,7 @@ const Layout = ({ children }) => {
                 <>
                   <Link to="/customer/dashboard" className={`py-5 ${isActive('/customer/dashboard')}`}>Dashboard</Link>
                   <Link to="/customer/parcels" className={`py-5 ${isActive('/customer/parcels')}`}>My Parcels</Link>
+                  <Link to="/customer/shops" className={`py-5 ${isActive('/customer/shops')}`}>Verified Shops</Link>
                   <Link to="/customer/add-parcel" className={`py-5 ${isActive('/customer/add-parcel')}`}>Add Parcel</Link>
                   <Link to="/customer/notifications" className={`py-5 ${isActive('/customer/notifications')}`}>
                     Notifications {unreadCount > 0 && `(${unreadCount})`}
@@ -146,6 +147,7 @@ const Layout = ({ children }) => {
             <>
               <Link to="/customer/dashboard" className={location.pathname === '/customer/dashboard' ? 'text-black font-bold' : 'text-gray-500'}>Dashboard</Link>
               <Link to="/customer/parcels" className={location.pathname === '/customer/parcels' ? 'text-black font-bold' : 'text-gray-500'}>My Parcels</Link>
+              <Link to="/customer/shops" className={location.pathname === '/customer/shops' ? 'text-black font-bold' : 'text-gray-500'}>Verified Shops</Link>
               <Link to="/customer/add-parcel" className={location.pathname === '/customer/add-parcel' ? 'text-black font-bold' : 'text-gray-500'}>Add Parcel</Link>
               <Link to="/customer/notifications" className={location.pathname === '/customer/notifications' ? 'text-black font-bold' : 'text-gray-500'}>
                 Notifications {unreadCount > 0 && `(${unreadCount})`}

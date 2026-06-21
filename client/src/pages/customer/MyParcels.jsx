@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const MyParcels = () => {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
   const [parcels, setParcels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,7 +11,8 @@ const MyParcels = () => {
   // Rating state
   const [ratingShopId, setRatingShopId] = useState(null);
   const [ratingValue, setRatingValue] = useState(5);
-  const [ratingFeedback, setRatingFeedback] = useState('');
+  const [ratingTags, setRatingTags] = useState([]);
+  const [customComment, setCustomComment] = useState('');
   const [submittingRating, setSubmittingRating] = useState(false);
 
   const fetchParcels = async () => {
@@ -39,17 +40,58 @@ const MyParcels = () => {
     });
   };
 
+  const handleOpenRatingForm = async (shopId) => {
+    try {
+      const shop = await apiFetch(`/shops/${shopId}`);
+      const userRating = shop.ratings?.find(r => r.customerId === user?._id);
+      
+      if (userRating) {
+        setRatingValue(userRating.rating);
+        const savedFeedback = userRating.feedback || '';
+        const tagsList = ["Fast Handover", "Secure Storage", "Polite Owner", "Convenient Location", "Fair Fees"];
+        const matchedTags = tagsList.filter(tag => savedFeedback.includes(tag));
+        setRatingTags(matchedTags);
+        
+        let cleanedComment = savedFeedback;
+        matchedTags.forEach(tag => {
+          cleanedComment = cleanedComment.replace(tag, '');
+        });
+        cleanedComment = cleanedComment.replace(/^[\s,]+|[\s,]+$/g, '');
+        setCustomComment(cleanedComment);
+      } else {
+        setRatingValue(5);
+        setRatingTags([]);
+        setCustomComment('');
+      }
+      setRatingShopId(shopId);
+    } catch (err) {
+      console.error(err);
+      setRatingValue(5);
+      setRatingTags([]);
+      setCustomComment('');
+      setRatingShopId(shopId);
+    }
+  };
+
   const handleRateShop = async (shopId) => {
     setSubmittingRating(true);
     try {
+      const parts = [...ratingTags];
+      if (customComment.trim()) {
+        parts.push(customComment.trim());
+      }
+      const combinedFeedback = parts.join(', ');
+
       await apiFetch(`/shops/${shopId}/rate`, {
         method: 'POST',
-        body: JSON.stringify({ rating: ratingValue, feedback: ratingFeedback }),
+        body: JSON.stringify({ rating: ratingValue, feedback: combinedFeedback }),
       });
       alert('Thank you for your feedback!');
       setRatingShopId(null);
       setRatingValue(5);
-      setRatingFeedback('');
+      setRatingTags([]);
+      setCustomComment('');
+      fetchParcels();
     } catch (err) {
       alert(err.message || 'Failed to submit rating.');
     } finally {
@@ -215,19 +257,17 @@ const MyParcels = () => {
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {["Fast Handover", "Secure Storage", "Polite Owner", "Convenient Location", "Fair Fees"].map((tag) => {
-                            const isSelected = ratingFeedback.split(',').map(t => t.trim()).includes(tag);
+                            const isSelected = ratingTags.includes(tag);
                             return (
                               <button
                                 key={tag}
                                 type="button"
                                 onClick={() => {
-                                  let currentTags = ratingFeedback.split(',').map(t => t.trim()).filter(Boolean);
-                                  if (currentTags.includes(tag)) {
-                                    currentTags = currentTags.filter(t => t !== tag);
+                                  if (ratingTags.includes(tag)) {
+                                    setRatingTags(ratingTags.filter(t => t !== tag));
                                   } else {
-                                    currentTags.push(tag);
+                                    setRatingTags([...ratingTags, tag]);
                                   }
-                                  setRatingFeedback(currentTags.join(', '));
                                 }}
                                 className={`text-[10px] uppercase tracking-wider px-2.5 py-1 border transition-all duration-150 font-medium ${
                                   isSelected
@@ -247,8 +287,8 @@ const MyParcels = () => {
                           Written Review Details (Optional)
                         </label>
                         <textarea
-                          value={ratingFeedback}
-                          onChange={(e) => setRatingFeedback(e.target.value)}
+                          value={customComment}
+                          onChange={(e) => setCustomComment(e.target.value)}
                           rows={2}
                           className="input-field"
                           placeholder="Provide additional details or customize tags here..."
@@ -263,7 +303,7 @@ const MyParcels = () => {
                           {submittingRating ? 'Submitting...' : 'Submit Rating'}
                         </button>
                         <button
-                          onClick={() => { setRatingShopId(null); setRatingValue(5); setRatingFeedback(''); }}
+                          onClick={() => { setRatingShopId(null); setRatingValue(5); setRatingTags([]); setCustomComment(''); }}
                           className="btn-secondary py-1.5 px-4 text-xs"
                         >
                           Cancel
@@ -272,7 +312,7 @@ const MyParcels = () => {
                     </div>
                   ) : (
                     <button
-                      onClick={() => setRatingShopId(parcel.shopId._id)}
+                      onClick={() => handleOpenRatingForm(parcel.shopId._id)}
                       className="btn-secondary py-1.5 px-4 text-xs"
                     >
                       ★ Rate This Shop

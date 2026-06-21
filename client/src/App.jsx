@@ -15,6 +15,7 @@ import CustomerDashboard from './pages/customer/Dashboard';
 import MyParcels from './pages/customer/MyParcels';
 import AddParcel from './pages/customer/AddParcel';
 import CustomerProfile from './pages/customer/Profile';
+import CustomerShops from './pages/customer/Shops';
 
 // Shopkeeper pages
 import ShopkeeperDashboard from './pages/shopkeeper/Dashboard';
@@ -83,6 +84,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['customer']}>
                   <MyParcels />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/shops"
+              element={
+                <ProtectedRoute allowedRoles={['customer']}>
+                  <CustomerShops />
                 </ProtectedRoute>
               }
             />

@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const Shops = () => {
-  const { apiFetch } = useAuth();
+  const { apiFetch, user } = useAuth();
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('');
   const [processingId, setProcessingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+
+  const isDemoAdmin = user?.email === 'admin@grampickup.com';
 
   const fetchShops = async () => {
     try {
@@ -92,6 +94,11 @@ const Shops = () => {
           <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">
             {shops.length} total registrations &bull; {shops.filter(s => s.verificationStatus === 'pending').length} pending review
           </p>
+          {isDemoAdmin && (
+            <div className="mt-3 text-xs font-semibold text-orange-600 bg-orange-50 border border-orange-200 py-1.5 px-3 inline-block">
+              NOTE: Demo Admins cannot approve or reject shops.
+            </div>
+          )}
         </div>
 
         {/* Filter Dropdown */}
@@ -208,8 +215,8 @@ const Shops = () => {
                   {shop.verificationStatus !== 'approved' && (
                     <button
                       onClick={() => handleUpdateStatus(shop._id, 'approved')}
-                      disabled={processingId === shop._id}
-                      className="btn-primary py-1 px-3.5 text-xs uppercase"
+                      disabled={processingId === shop._id || isDemoAdmin}
+                      className="btn-primary py-1 px-3.5 text-xs uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {processingId === shop._id ? '...' : 'Approve'}
                     </button>
@@ -217,8 +224,8 @@ const Shops = () => {
                   {shop.verificationStatus !== 'rejected' && (
                     <button
                       onClick={() => handleUpdateStatus(shop._id, 'rejected')}
-                      disabled={processingId === shop._id}
-                      className="btn-danger py-1 px-3.5 text-xs uppercase"
+                      disabled={processingId === shop._id || isDemoAdmin}
+                      className="btn-danger py-1 px-3.5 text-xs uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {processingId === shop._id ? '...' : 'Reject'}
                     </button>

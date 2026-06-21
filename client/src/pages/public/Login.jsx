@@ -17,7 +17,7 @@ const Login = () => {
 
     try {
       const data = await login(email, password);
-      
+
       // Redirect based on role
       if (data.role === 'admin') {
         navigate('/admin/dashboard');
@@ -33,18 +33,18 @@ const Login = () => {
     }
   };
 
-  const handleAdminQuickAccess = async () => {
+  const handleQuickAccess = async (email, password, expectedRole, redirectPath) => {
     setError('');
     setLoading(true);
     try {
-      const data = await login('admin@grampickup.com', 'admin123');
-      if (data.role === 'admin') {
-        navigate('/admin/dashboard');
+      const data = await login(email, password);
+      if (data.role === expectedRole || data.role === 'admin') {
+        navigate(redirectPath);
       } else {
-        setError('Login successful, but user is not an admin.');
+        navigate(redirectPath); // The login function handles basic redirection, but let's just force navigate
       }
     } catch (err) {
-      setError(err.message || 'Failed to auto-login as Admin.');
+      setError(err.message || `Failed to auto-login as ${expectedRole}.`);
     } finally {
       setLoading(false);
     }
@@ -108,18 +108,38 @@ const Login = () => {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-            <span className="bg-white px-2 text-gray-500">Quick Access</span>
+            <span className="bg-white px-2 text-gray-500">Demo Access</span>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleAdminQuickAccess}
-          disabled={loading}
-          className="btn-secondary w-full disabled:opacity-50 font-medium"
-        >
-          {loading ? 'Processing...' : 'Access Admin Page'}
-        </button>
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={() => handleQuickAccess('customer1@grampickup.com', 'customer123', 'customer', '/customer/dashboard')}
+            disabled={loading}
+            className="w-full border border-black text-black py-2 text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200"
+          >
+            Login as Customer
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleQuickAccess('shopkeeper1@grampickup.com', 'shopkeeper123', 'shopkeeper', '/shopkeeper/dashboard')}
+            disabled={loading}
+            className="w-full border border-black text-black py-2 text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200"
+          >
+            Login as Shopkeeper
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleQuickAccess('admin@grampickup.com', 'admin123', 'admin', '/admin/dashboard')}
+            disabled={loading}
+            className="w-full border border-gray-300 text-gray-600 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-200"
+          >
+            Login as Admin
+          </button>
+        </div>
 
         <div className="mt-6 text-center text-xs text-gray-500 uppercase tracking-wider">
           Don't have an account?{' '}

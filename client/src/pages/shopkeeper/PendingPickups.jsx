@@ -118,6 +118,33 @@ const PendingPickups = () => {
     }
   };
 
+  const handleDeliverDirect = async (parcelId) => {
+    if (!window.confirm("Are you sure you want to mark this parcel as collected directly? This will bypass OTP, lock in the current storage fee, and stop calculations.")) {
+      return;
+    }
+    setVerifyingId(parcelId);
+    try {
+      await apiFetch(`/parcels/${parcelId}/deliver-direct`, {
+        method: 'PUT',
+      });
+      alert('Parcel marked as delivered/collected successfully! Storage fee locked.');
+      
+      // Clear inputs for this parcel if any
+      setOtpFields(prev => {
+        const copy = { ...prev };
+        delete copy[parcelId];
+        return copy;
+      });
+
+      // Refresh list
+      fetchPendingPickups();
+    } catch (err) {
+      alert(err.message || 'Error marking parcel as delivered');
+    } finally {
+      setVerifyingId(null);
+    }
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('en-IN', {
@@ -203,13 +230,23 @@ const PendingPickups = () => {
                       );
                     })}
                   </div>
-                  <button
-                    type="submit"
-                    disabled={verifyingId === parcel._id}
-                    className="btn-primary w-full py-2 text-xs uppercase tracking-wider font-semibold"
-                  >
-                    {verifyingId === parcel._id ? 'Verifying...' : 'Verify & Handover'}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      disabled={verifyingId === parcel._id}
+                      className="btn-primary flex-1 py-2 text-xs uppercase tracking-wider font-semibold"
+                    >
+                      {verifyingId === parcel._id ? 'Verifying...' : 'Verify & Handover'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeliverDirect(parcel._id)}
+                      disabled={verifyingId === parcel._id}
+                      className="btn-secondary py-2 px-3 text-xs uppercase tracking-wider font-semibold bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
+                    >
+                      Collect Directly
+                    </button>
+                  </div>
                 </form>
               </div>
 

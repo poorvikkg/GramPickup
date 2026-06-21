@@ -121,6 +121,10 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
 // @route   PUT /api/shops/:id/status
 // @access  Private (Admin only)
 router.put('/:id/status', protect, authorize('admin'), async (req, res) => {
+  if (req.user && req.user.email === 'admin@grampickup.com') {
+    return res.status(403).json({ message: 'Action not allowed: Demo Admin cannot approve or reject shops.' });
+  }
+
   const { status } = req.body; // 'approved' or 'rejected'
 
   if (!['approved', 'rejected'].includes(status)) {
@@ -195,6 +199,25 @@ router.post('/:id/rate', protect, authorize('customer'), async (req, res) => {
     res.json(shop);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @desc    Get single shop details
+// @route   GET /api/shops/:id
+// @access  Private (Authenticated users)
+router.get('/:id', protect, async (req, res) => {
+  try {
+    const shop = await Shop.findById(req.params.id);
+    if (!shop) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
+    res.json(shop);
+  } catch (error) {
+    console.error(error);
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 });

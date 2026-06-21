@@ -26,6 +26,10 @@ async function run() {
   console.log('2. Approved shops:', shops.length, '- First:', shops[0]?.shopName);
   console.log('Shops[0] details:', shops[0]);
 
+  // Test the new GET /api/shops/:id route
+  const singleShop = await api(`/shops/${shops[0]._id}`, { headers: custAuth });
+  console.log('2b. Single shop fetch details OK:', singleShop.shopName, 'City:', singleShop.city);
+
   // 3. Register a new parcel
   const newParcel = await api('/parcels', {
     method: 'POST',
@@ -81,6 +85,27 @@ async function run() {
     body: JSON.stringify({ otp: ready.otp }),
   });
   console.log('10. OTP verified, delivered! Status:', delivered.status, 'Final Fee:', delivered.fee);
+
+  // 10b. Register another parcel to test deliver-direct
+  const newParcel2 = await api('/parcels', {
+    method: 'POST',
+    headers: custAuth,
+    body: JSON.stringify({
+      parcelName: 'Direct Delivery Test Gardening Kit',
+      trackingNumber: 'TRKTEST002',
+      shopId: shops[0]._id,
+      expectedArrivalDate: '2026-06-25',
+    }),
+  });
+  await api(`/parcels/${newParcel2._id}/received`, {
+    method: 'PUT',
+    headers: skAuth,
+  });
+  const deliveredDirect = await api(`/parcels/${newParcel2._id}/deliver-direct`, {
+    method: 'PUT',
+    headers: skAuth,
+  });
+  console.log('10b. Direct delivery (no OTP) OK. Status:', deliveredDirect.status, 'Fee:', deliveredDirect.fee);
 
   // 11. Check revenue
   const revenue = await api('/parcels/revenue', { headers: skAuth });

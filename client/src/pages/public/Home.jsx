@@ -10,7 +10,7 @@ const Home = () => {
       <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl uppercase mb-6">
         Village Parcel Pickup Network
       </h1>
-      
+
       <p className="text-lg text-gray-600 mb-8 font-light leading-relaxed">
         A platform connecting villagers with trusted city shops for parcel collection and storage.
         Eliminate failed deliveries, reduce travel costs, and keep your online purchases secure.
@@ -24,8 +24,8 @@ const Home = () => {
               user.role === 'admin'
                 ? '/admin/dashboard'
                 : user.role === 'shopkeeper'
-                ? '/shopkeeper/dashboard'
-                : '/customer/dashboard'
+                  ? '/shopkeeper/dashboard'
+                  : '/customer/dashboard'
             }
             className="btn-primary"
           >
@@ -39,6 +39,9 @@ const Home = () => {
           </Link>
           <Link to="/login" className="btn-secondary">
             Login
+          </Link>
+          <Link to="/login" className="btn-secondary border-black text-black font-semibold">
+            Demo
           </Link>
         </div>
       )}
